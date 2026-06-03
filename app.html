@@ -1,0 +1,1172 @@
+
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>הצדף | חלוקת טיפים</title>
+  <style>
+    :root{
+      /* Refreshed color palette for a modern, mobile‑friendly look */
+      --bg:#f4f7fb;
+      --fg:#17202a;
+      --card:#ffffff;
+      --soft:#eff5fc;
+      --muted:#697382;
+      --accent:#0066ff;
+      --accent-soft:rgba(0,102,255,.12);
+      --ok:#198754;
+      --warn:#b76a00;
+      --err:#dc3545;
+      --border:#d8dee6;
+      --input-bg:#ffffff;
+      --input-fg:#111827;
+      --focus:rgba(0,102,255,.30);
+      /* Updated sizes for a more spacious, modern UI */
+      --radius:20px;
+      --touch:56px;
+      --gap:16px;
+    }
+    @media (prefers-color-scheme:dark){:root{--bg:#0b0f14;--fg:#e5e7eb;--card:#101720;--soft:#141d28;--muted:#9aa3af;--border:#243142;--input-bg:#172231;--input-fg:#e5e7eb;--accent-soft:rgba(13,110,253,.18);--focus:rgba(13,110,253,.35)}}
+    *{box-sizing:border-box} html,body{min-height:100%}
+    body{margin:0;background:var(--bg);color:var(--fg);font:400 16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;max-width:900px;margin-inline:auto;padding:10px 10px calc(88px + env(safe-area-inset-bottom));overflow-x:hidden}
+    h1{font-size:1.25rem;margin:4px 0 10px;text-align:center} h2{font-size:1.08rem;margin:0 0 10px} h3{font-size:1rem;margin:0 0 8px}
+    .topbar{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 86%,transparent);padding:6px 0 10px}
+    .tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;background:var(--soft);border:1px solid var(--border);border-radius:999px;padding:5px}
+    .tab-btn{min-height:40px;border:0;border-radius:999px;background:transparent;color:var(--muted);font-weight:800;cursor:pointer;font-size:.86rem;padding:0 4px}.tab-btn.active{background:var(--card);color:var(--fg);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+    .view{display:none}.view.active{display:block}.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin:10px 0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.tight-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.tight-row>*{flex:0 0 auto}
+    label{display:block;font-size:.92rem;margin:0 0 5px;color:var(--muted)} input,select,button,textarea{font:inherit}
+    input[type="text"],input[type="number"],input[type="date"],input[type="month"],select,textarea{width:100%;min-height:var(--touch);border:1px solid var(--border);border-radius:12px;padding:10px 12px;background:var(--input-bg);color:var(--input-fg);caret-color:var(--input-fg)}
+    textarea{min-height:110px;resize:vertical} input:focus,select:focus,textarea:focus,button:focus-visible{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--focus)}
+    input[type="checkbox"],input[type="radio"]{inline-size:1.2rem;block-size:1.2rem;cursor:pointer}.btn{min-height:var(--touch);border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:850;padding:0 16px;cursor:pointer}.btn.secondary{background:var(--soft);color:var(--fg);border:1px solid var(--border)}.btn.danger{background:transparent;color:var(--err);border:1px solid var(--err)}.btn.small{min-height:40px;padding:0 12px;font-size:.92rem}.btn.icon{width:40px;min-width:40px;min-height:40px;padding:0}
+    .switch-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:10px}.switch-label{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;color:var(--fg)}.pill{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:999px;background:var(--soft);border:1px solid var(--border);font-size:.86rem;color:var(--muted)}.pill.ok{color:var(--ok)}.pill.err{color:var(--err)}.disabled-option{opacity:.45;pointer-events:none}
+    .kpi-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.kpi{background:var(--soft);border:1px solid var(--border);border-radius:14px;padding:11px;min-width:0}.kpi span{display:block;color:var(--muted);font-size:.82rem}.kpi b{display:block;font-size:1.25rem;margin-top:3px;overflow-wrap:anywhere}.hero-kpi{grid-column:1/-1;background:var(--accent-soft);border-color:rgba(13,110,253,.3)}.hero-kpi b{font-size:1.8rem}
+    .worker-card,.result-card,.day-card,.employee-card,.alert-card,.summary-card{border:1px solid var(--border);border-radius:14px;background:var(--card);padding:12px;margin:8px 0}.worker-head,.employee-head,.day-head,.summary-head{display:flex;gap:10px;align-items:center;justify-content:space-between}.worker-title,.employee-title,.day-title,.summary-title{font-weight:850;min-width:0;overflow-wrap:anywhere}.employee-sub,.worker-sub,.day-sub,.summary-sub{color:var(--muted);font-size:.9rem;margin-top:2px}.worker-actions,.employee-actions,.day-actions{display:flex;gap:6px;align-items:center;flex:0 0 auto}.stars-options{display:none;gap:8px;flex-wrap:wrap;margin-top:8px}.radio-chip{display:flex;align-items:center;gap:5px;border:1px solid var(--border);border-radius:999px;padding:7px 10px;background:var(--soft);cursor:pointer;user-select:none}.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.collapse-body.collapsed{display:none}
+    .result-card{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px}.result-card .name{grid-column:1/-1;font-weight:850}.metric{background:var(--soft);border-radius:12px;padding:8px;min-width:0}.metric span{display:block;color:var(--muted);font-size:.78rem}.metric b{font-size:.95rem;overflow-wrap:anywhere}.metric.big b{font-size:1.15rem;font-weight:850}.outlier-high{border-right:4px solid var(--ok)}.outlier-low{border-right:4px solid var(--err)}
+    .sticky-summary{position:sticky;top:66px;z-index:15;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:10px;margin:10px 0;box-shadow:0 4px 14px rgba(0,0,0,.08)}.fab{position:fixed;left:10px;right:10px;bottom:10px;z-index:30;max-width:880px;margin-inline:auto;display:grid;grid-template-columns:1fr 1fr;gap:8px;pointer-events:none}.fab>*{pointer-events:auto}.toast{position:fixed;left:10px;right:10px;bottom:82px;z-index:40;background:var(--fg);color:var(--bg);padding:12px 14px;border-radius:14px;text-align:center;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none;max-width:880px;margin-inline:auto}.toast.show{opacity:1;transform:translateY(0)}
+    .muted{color:var(--muted)}.danger-text{color:var(--err)}.ok-text{color:var(--ok)}.warn-text{color:var(--warn)}.empty{padding:14px;color:var(--muted);text-align:center;background:var(--soft);border:1px dashed var(--border);border-radius:14px}.hidden{display:none!important}.divider{height:1px;background:var(--border);margin:12px 0}.print-area{display:none}
+    @media (max-width:430px){body{padding-inline:9px}.tabs{gap:3px}.tab-btn{font-size:.78rem;padding:0 2px}.grid{grid-template-columns:1fr}.kpi-grid{grid-template-columns:1fr 1fr}.result-card{grid-template-columns:1fr 1fr}.worker-head,.employee-head,.day-head,.summary-head{align-items:flex-start}.fab{grid-template-columns:1fr 1fr}}
+    @media print{body{background:#fff;color:#000;max-width:none;padding:0}.topbar,.fab,.toast,.view:not(.print-view),.no-print{display:none!important}.print-area{display:block!important;padding:18px}.print-area h1{text-align:right}.card,.summary-card,.result-card{box-shadow:none;border-color:#999;break-inside:avoid}.print-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}}
+
+    /* --------------------------------------------------------------
+       Icon helpers and accessibility classes
+       These classes are used throughout the UI to embed small icons
+       next to labels. They ensure proper alignment and spacing for
+       both RTL and LTR directions. Icons appear after the text in
+       the DOM (due to RTL) but margin-inline-start will add space
+       between label and icon regardless of direction.
+    -------------------------------------------------------------- */
+    .icon {
+      font-size: 1.2rem;
+      margin-inline-start: 0.4rem;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+    }
+    /* Specific adjustment for icons inside navigation tabs */
+    .tab-btn .icon {
+      margin-inline-start: 0.3rem;
+      font-size: 1.1rem;
+    }
+
+    /* Emphasise metrics inside monthly summary cards for better readability on mobile. */
+    .summary-card .kpi b{
+      font-size: 1.15rem;
+      font-weight: 850;
+    }
+
+    /* Premium operations redesign */
+    :root{
+      --bg:#08110f;
+      --fg:#f6f1e8;
+      --card:#111c18;
+      --soft:#182823;
+      --muted:#aab7ae;
+      --accent:#d9ad55;
+      --accent-soft:rgba(217,173,85,.16);
+      --ok:#41d6a0;
+      --warn:#f3b65f;
+      --err:#ff6b6b;
+      --border:rgba(246,241,232,.12);
+      --input-bg:#0d1714;
+      --input-fg:#fffaf0;
+      --focus:rgba(65,214,160,.28);
+      --radius:16px;
+      --touch:58px;
+      --gap:16px;
+    }
+    @media (prefers-color-scheme:light){
+      :root{
+        --bg:#08110f;
+        --fg:#f6f1e8;
+        --card:#111c18;
+        --soft:#182823;
+        --muted:#aab7ae;
+        --border:rgba(246,241,232,.12);
+        --input-bg:#0d1714;
+        --input-fg:#fffaf0;
+      }
+    }
+    body{
+      max-width:1040px;
+      padding:14px 12px calc(96px + env(safe-area-inset-bottom));
+      background:
+        linear-gradient(135deg,#08110f 0%,#10221d 42%,#0b1614 100%);
+      letter-spacing:0;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      z-index:-1;
+      pointer-events:none;
+      background:
+        linear-gradient(180deg,rgba(217,173,85,.10),transparent 34%),
+        repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 1px,transparent 1px 72px);
+      opacity:.9;
+    }
+    h1{
+      font-size:1.42rem;
+      font-weight:950;
+      margin:6px 0 14px;
+      color:#fff7e8;
+      text-shadow:0 12px 34px rgba(0,0,0,.42);
+    }
+    h2,h3{color:#fff8ea;font-weight:900}
+    .topbar{
+      top:0;
+      margin:-14px -12px 12px;
+      padding:16px 12px 12px;
+      background:linear-gradient(180deg,rgba(8,17,15,.98),rgba(8,17,15,.84) 78%,transparent);
+      backdrop-filter:blur(18px);
+    }
+    .tabs{
+      max-width:760px;
+      margin-inline:auto;
+      gap:6px;
+      padding:6px;
+      border-radius:18px;
+      background:rgba(255,255,255,.055);
+      border-color:rgba(255,255,255,.10);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 38px rgba(0,0,0,.28);
+    }
+    .tab-btn{
+      min-height:46px;
+      border-radius:13px;
+      color:#c5d0c8;
+      font-size:.86rem;
+      transition:transform .18s ease,background .18s ease,color .18s ease,box-shadow .18s ease;
+    }
+    .tab-btn.active{
+      color:#102019;
+      background:linear-gradient(135deg,#f5d990,#d9ad55);
+      box-shadow:0 10px 26px rgba(217,173,85,.28);
+    }
+    .tab-btn:active,.btn:active{transform:translateY(1px) scale(.99)}
+    .card{
+      padding:16px;
+      margin:12px 0;
+      border-radius:18px;
+      background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.045));
+      border-color:rgba(255,255,255,.13);
+      box-shadow:0 18px 48px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.06);
+      backdrop-filter:blur(16px);
+    }
+    label{color:#d8cdaa;font-weight:750}
+    input[type="text"],input[type="number"],input[type="date"],input[type="month"],select,textarea{
+      border-radius:14px;
+      border-color:rgba(255,255,255,.13);
+      background:linear-gradient(180deg,rgba(4,10,9,.9),rgba(15,28,24,.92));
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+    }
+    input::placeholder{color:#6f7d74}
+    input:focus,select:focus,textarea:focus{
+      border-color:var(--ok);
+      box-shadow:0 0 0 4px var(--focus),0 12px 24px rgba(0,0,0,.18);
+    }
+    .btn{
+      border-radius:14px;
+      color:#102019;
+      background:linear-gradient(135deg,#f3d68d,#d6a13f);
+      box-shadow:0 14px 30px rgba(217,173,85,.24);
+      transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;
+    }
+    .btn:hover{filter:brightness(1.04)}
+    .btn.secondary{
+      color:#f6f1e8;
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.13);
+      box-shadow:none;
+    }
+    .btn.danger{
+      color:#ffe1e1;
+      background:rgba(255,107,107,.08);
+      border:1px solid rgba(255,107,107,.46);
+      box-shadow:none;
+    }
+    .btn.icon{border-radius:12px}
+    .pill{
+      color:#e7ddc8;
+      background:rgba(255,255,255,.07);
+      border-color:rgba(255,255,255,.12);
+    }
+    .pill.ok{color:var(--ok);background:rgba(65,214,160,.10)}
+    .pill.err{color:#ff9a9a;background:rgba(255,107,107,.10)}
+    .worker-card,.result-card,.day-card,.employee-card,.alert-card,.summary-card{
+      border-radius:16px;
+      background:rgba(6,14,12,.58);
+      border-color:rgba(255,255,255,.12);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .worker-card,.employee-card,.day-card,.summary-card{transition:transform .16s ease,border-color .16s ease,background .16s ease}
+    .worker-card:hover,.employee-card:hover,.day-card:hover,.summary-card:hover{
+      transform:translateY(-1px);
+      border-color:rgba(217,173,85,.34);
+      background:rgba(13,27,23,.74);
+    }
+    .kpi{
+      border-radius:16px;
+      background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.045));
+      border-color:rgba(255,255,255,.12);
+    }
+    .kpi span{color:#c5baa4;font-weight:750}
+    .kpi b{color:#fff8ea;font-weight:950}
+    .hero-kpi{
+      background:linear-gradient(135deg,rgba(65,214,160,.20),rgba(217,173,85,.16));
+      border-color:rgba(65,214,160,.32);
+    }
+    .hero-kpi b{color:#63f0bb}
+    .metric{
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.055);
+    }
+    .outlier-high{border-right-color:var(--ok)}
+    .outlier-low{border-right-color:var(--err)}
+    .fab{
+      left:12px;
+      right:12px;
+      bottom:12px;
+      gap:10px;
+      padding:8px;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:20px;
+      background:rgba(8,17,15,.78);
+      backdrop-filter:blur(18px);
+      box-shadow:0 18px 48px rgba(0,0,0,.38);
+    }
+    .toast{
+      bottom:94px;
+      background:#f6f1e8;
+      color:#0b1714;
+      font-weight:850;
+      box-shadow:0 16px 38px rgba(0,0,0,.35);
+    }
+    .empty{
+      color:#c8d2cb;
+      background:rgba(255,255,255,.05);
+      border-color:rgba(255,255,255,.16);
+    }
+    .radio-chip{
+      color:#f6f1e8;
+      background:rgba(255,255,255,.07);
+      border-color:rgba(255,255,255,.13);
+    }
+    .divider{background:rgba(255,255,255,.12)}
+    @media (min-width:780px){
+      .view.active{animation:riseIn .24s ease both}
+      h1{font-size:1.78rem}
+      .grid{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+      .kpi-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+      .hero-kpi{grid-column:span 2}
+    }
+    @media (max-width:430px){
+      body{padding-inline:10px}
+      .topbar{margin-inline:-10px;padding-inline:10px}
+      .tabs{grid-template-columns:repeat(5,minmax(0,1fr));border-radius:16px}
+      .tab-btn{font-size:.73rem;min-height:44px}
+      .tab-btn .icon{display:block;margin:1px 0 0;font-size:1rem}
+      .card{padding:14px;border-radius:16px}
+      .row>*{min-width:140px}
+      .employee-head,.worker-head,.day-head,.summary-head{gap:8px}
+      .employee-actions,.day-actions{flex-wrap:wrap;justify-content:flex-end}
+    }
+    @keyframes riseIn{from{opacity:.65;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+    /* Hatzedef Greek refresh */
+    :root{
+      --bg:#eef8ff;
+      --fg:#082f54;
+      --card:#ffffff;
+      --soft:#e5f4ff;
+      --muted:#5f768a;
+      --accent:#0b4f86;
+      --accent-soft:rgba(20,165,214,.14);
+      --ok:#078b8f;
+      --warn:#b7791f;
+      --err:#d64545;
+      --border:#c8ddea;
+      --input-bg:#ffffff;
+      --input-fg:#082f54;
+      --focus:rgba(14,165,198,.24);
+      --radius:14px;
+      --touch:56px;
+    }
+    @media (prefers-color-scheme:dark){
+      :root{
+        --bg:#eef8ff;
+        --fg:#082f54;
+        --card:#ffffff;
+        --soft:#e5f4ff;
+        --muted:#5f768a;
+        --border:#c8ddea;
+        --input-bg:#ffffff;
+        --input-fg:#082f54;
+      }
+    }
+    body{
+      max-width:1040px;
+      color:var(--fg);
+      font-family:"FB Hatzofen","FB HATZOFEN","FB Hatzofen MF","Hatzofen",Arial,system-ui,sans-serif;
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.82),rgba(255,255,255,.60)),
+        radial-gradient(circle at 10% 0%,rgba(96,191,229,.34),transparent 34%),
+        linear-gradient(135deg,#f8fdff 0%,#e7f6ff 52%,#d7efff 100%);
+    }
+    body::before{
+      background:
+        linear-gradient(90deg,rgba(11,79,134,.05) 1px,transparent 1px),
+        linear-gradient(180deg,rgba(11,79,134,.045) 1px,transparent 1px);
+      background-size:44px 44px;
+      opacity:.8;
+    }
+    h1{
+      color:#07345a;
+      font-size:1.64rem;
+      font-weight:900;
+      text-shadow:none;
+    }
+    h1::after{
+      content:"";
+      display:block;
+      width:54px;
+      height:3px;
+      margin:8px auto 0;
+      border-radius:999px;
+      background:linear-gradient(90deg,#0b4f86,#20a7d8);
+    }
+    h2,h3{color:#07345a;font-weight:850}
+    .topbar{
+      background:linear-gradient(180deg,rgba(248,253,255,.97),rgba(248,253,255,.88) 78%,transparent);
+      backdrop-filter:blur(14px);
+    }
+    .tabs{
+      background:#ffffff;
+      border-color:#cce3f1;
+      box-shadow:0 12px 32px rgba(9,73,116,.12);
+    }
+    .tab-btn{
+      color:#56758d;
+      border-radius:12px;
+    }
+    .tab-btn.active{
+      color:#ffffff;
+      background:linear-gradient(135deg,#07345a,#0d6fa6);
+      box-shadow:0 10px 24px rgba(11,79,134,.24);
+    }
+    .card{
+      background:rgba(255,255,255,.92);
+      border-color:#cbe0ed;
+      box-shadow:0 14px 34px rgba(7,52,90,.10);
+      backdrop-filter:blur(10px);
+    }
+    label{color:#385d78;font-weight:750}
+    input[type="text"],input[type="number"],input[type="date"],input[type="month"],select,textarea{
+      color:#082f54;
+      background:#ffffff;
+      border-color:#bcd7e8;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.85);
+    }
+    input::placeholder{color:#8ca4b7}
+    input:focus,select:focus,textarea:focus{
+      border-color:#20a7d8;
+      box-shadow:0 0 0 4px var(--focus);
+    }
+    .btn{
+      color:#ffffff;
+      background:linear-gradient(135deg,#07345a,#0d6fa6);
+      border-radius:12px;
+      box-shadow:0 12px 24px rgba(11,79,134,.20);
+    }
+    .btn.secondary{
+      color:#0b4f86;
+      background:#eef8ff;
+      border-color:#bcd7e8;
+      box-shadow:none;
+    }
+    .btn.danger{
+      color:#b42323;
+      background:#fff4f4;
+      border-color:#f0b8b8;
+    }
+    .pill{
+      color:#0b4f86;
+      background:#eef8ff;
+      border-color:#c4deee;
+    }
+    .pill.ok{color:#05777a;background:#e5fbfb}
+    .pill.err{color:#b42323;background:#fff4f4}
+    .worker-card,.result-card,.day-card,.employee-card,.alert-card,.summary-card{
+      background:#ffffff;
+      border-color:#d5e7f2;
+      box-shadow:0 8px 20px rgba(7,52,90,.07);
+    }
+    .worker-card:hover,.employee-card:hover,.day-card:hover,.summary-card:hover{
+      border-color:#83c8e8;
+      background:#ffffff;
+    }
+    .kpi{
+      background:#f1f9ff;
+      border-color:#cde4f1;
+    }
+    .kpi span,.metric span{color:#5f768a}
+    .kpi b,.metric b{color:#07345a}
+    .hero-kpi{
+      background:linear-gradient(135deg,#e8f8ff,#ffffff);
+      border-color:#83c8e8;
+    }
+    .hero-kpi b{color:#05777a}
+    .metric{
+      background:#f4faff;
+      border-color:#d5e7f2;
+    }
+    .section-head{
+      border-bottom:1px solid #e4f0f7;
+      padding-bottom:8px;
+    }
+    .stars-wrap{
+      margin-top:12px;
+      padding:10px;
+      border:1px solid #cde4f1;
+      border-radius:12px;
+      background:#f7fcff;
+    }
+    .stars-wrap .switch-label{color:#07345a}
+    .radio-chip{
+      color:#07345a;
+      background:#ffffff;
+      border-color:#bcd7e8;
+      font-weight:800;
+    }
+    .radio-chip input{accent-color:#0d6fa6}
+    .radio-chip:has(input:checked){
+      color:#ffffff;
+      background:#0d6fa6;
+      border-color:#0d6fa6;
+    }
+    .fab{
+      background:rgba(255,255,255,.88);
+      border-color:#cde4f1;
+      box-shadow:0 16px 34px rgba(7,52,90,.18);
+    }
+    .toast{
+      color:#ffffff;
+      background:#07345a;
+    }
+    .empty{
+      color:#5f768a;
+      background:#f4faff;
+      border-color:#cde4f1;
+    }
+    .muted,.employee-sub,.worker-sub,.day-sub,.summary-sub{color:#5f768a}
+    .divider{background:#dcebf4}
+    @media (min-width:780px){
+      h1{font-size:2rem}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <h1>הצדף</h1>
+      <nav class="tabs" aria-label="ניווט">
+        <!-- Each tab now includes a small icon to visually convey its purpose. The icon appears after the Hebrew label so that in RTL layout it
+             sits on the left side. -->
+        <button class="tab-btn active" data-view="calcView" onclick="showView('calcView')">מחשבון<span class="icon">🧮</span></button>
+        <button class="tab-btn" data-view="employeesView" onclick="showView('employeesView')">עובדים<span class="icon">👥</span></button>
+        <button class="tab-btn" data-view="journalView" onclick="showView('journalView')">יומן<span class="icon">📖</span></button>
+        <button class="tab-btn" data-view="monthView" onclick="showView('monthView')">חודש<span class="icon">🗓️</span></button>
+        <button class="tab-btn" data-view="backupView" onclick="showView('backupView')">גיבוי<span class="icon">💾</span></button>
+      </nav>
+  </div>
+
+  <main>
+    <section id="calcView" class="view active">
+      <div class="card">
+        <div id="editStatus" class="pill hidden" style="margin-bottom:10px"></div>
+        <div class="grid">
+          <div><label for="workDate">תאריך</label><input id="workDate" type="date"></div>
+          <div><label for="totalTip">סה״כ טיפים</label><input id="totalTip" type="number" min="0" step="0.01" inputmode="decimal" placeholder="2450"></div>
+        </div>
+        <div class="switch-row">
+          <label class="switch-label" for="enableBarCut"><input id="enableBarCut" type="checkbox" checked onchange="toggleWeekendState()"><span class="pill">הפרשה לבר</span></label>
+          <label id="weekendWrapper" class="switch-label" for="isWeekend"><input id="isWeekend" type="checkbox"><span class="pill">סופ״ש</span></label>
+        </div>
+      </div>
+
+      <!-- Sticky summary removed to avoid duplicate floating summary -->
+      <!-- Sticky summary removed to avoid duplicate summaries -->
+
+      <div class="card">
+        <div class="section-head"><h2>ברמנים</h2><button class="btn secondary small" onclick="toggleCollapse('barBody')">הצגה</button></div>
+        <div id="barBody" class="collapse-body"><div id="barContainer"></div><button class="btn secondary" onclick="addShiftWorker('bar')">הוספה</button></div>
+      </div>
+
+      <div class="card">
+        <div class="section-head"><h2>מלצרים</h2><button class="btn secondary small" onclick="toggleCollapse('waiterBody')">הצגה</button></div>
+        <div id="waiterBody" class="collapse-body"><div id="waiterContainer"></div><button class="btn secondary" onclick="addShiftWorker('waiter')">הוספה</button></div>
+      </div>
+
+      <!-- New sections for hosts and shift managers -->
+      <div class="card">
+        <div class="section-head"><h2>מארחות</h2><button class="btn secondary small" onclick="toggleCollapse('hostBody')">הצגה</button></div>
+        <div id="hostBody" class="collapse-body"><div id="hostContainer"></div><button class="btn secondary" onclick="addShiftWorker('host')">הוספה</button></div>
+      </div>
+
+      <div class="card">
+        <div class="section-head"><h2>אחמ״שים</h2><button class="btn secondary small" onclick="toggleCollapse('managerBody')">הצגה</button></div>
+        <div id="managerBody" class="collapse-body"><div id="managerContainer"></div><button class="btn secondary" onclick="addShiftWorker('manager')">הוספה</button></div>
+      </div>
+
+      <div id="calcResults" class="card hidden">
+        <h2>תוצאות</h2>
+        <div id="resultsMacro" class="kpi-grid"></div>
+        <div class="divider"></div>
+        <h3>מלצרים</h3>
+        <div id="waitersResults"></div>
+        <div class="divider"></div>
+        <h3>ברמנים</h3>
+        <div id="barResults"></div>
+        <div class="divider"></div>
+        <h3>מארחות</h3>
+        <div id="hostResults"></div>
+        <div class="divider"></div>
+        <h3>אחמ״שים</h3>
+        <div id="managerResults"></div>
+      </div>
+    </section>
+
+    <section id="employeesView" class="view">
+      <div class="card">
+        <h2>עובדים</h2>
+        <div class="grid">
+          <div><label for="empId">מס׳ עובד</label><input id="empId" type="text" inputmode="numeric" placeholder="לדוגמה 123"></div>
+          <div><label for="empName">שם</label><input id="empName" type="text" placeholder="שם מלא"></div>
+          <div>
+            <label>תפקידים</label>
+            <div class="tight-row">
+              <label class="toggle-label"><input id="empRoleWaiter" type="checkbox"> מלצר</label>
+              <label class="toggle-label"><input id="empRoleBar" type="checkbox"> ברמן</label>
+              <label class="toggle-label"><input id="empRoleHost" type="checkbox"> מארחת</label>
+              <label class="toggle-label"><input id="empRoleManager" type="checkbox"> אחמ״ש</label>
+            </div>
+          </div>
+          <div><label for="empDefaultStars">כוכבים</label><select id="empDefaultStars"><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6" selected>6</option></select></div>
+        </div>
+        <div class="switch-row"><label class="switch-label" for="empActive"><input id="empActive" type="checkbox" checked><span class="pill">פעיל</span></label></div>
+        <div class="row" style="margin-top:10px"><button id="saveEmployeeBtn" class="btn" onclick="saveEmployee()">שמור עובד</button><button class="btn secondary" onclick="resetEmployeeForm()">נקה</button></div>
+      </div>
+      <div class="card">
+        <div class="grid"><div><label for="employeeSearch">חיפוש עובד</label><input id="employeeSearch" type="text" placeholder="שם או מספר" oninput="renderEmployees()"></div><div><label for="employeeFilter">סינון</label><select id="employeeFilter" onchange="renderEmployees()"><option value="active">פעילים</option><option value="all">כולם</option><option value="inactive">לא פעילים</option></select></div></div>
+        <div id="employeesList"></div>
+      </div>
+    </section>
+
+    <section id="journalView" class="view">
+      <div class="card"><div class="row"><button class="btn secondary" onclick="newDay()">יום חדש</button><button class="btn secondary" onclick="exportAllDaysCsv()">ייצוא יומן CSV</button></div></div>
+      <div class="card"><h2>ימים שמורים</h2><div id="daysList"></div></div>
+    </section>
+
+    <section id="monthView" class="view">
+      <div class="card">
+        <div class="grid">
+          <div><label for="monthPicker">חודש</label><input id="monthPicker" type="month" onchange="renderMonth()"></div>
+          <!-- Removed explicit role filter. Role is always treated as "all" -->
+          <!-- <div><label for="roleFilter">סינון</label><select id="roleFilter" onchange="renderMonth()"><option value="all">כולם</option><option value="waiter">מלצרים</option><option value="bar">ברמנים</option></select></div> -->
+          <div><label for="monthSearch">חיפוש</label><input id="monthSearch" type="text" placeholder="שם או מס׳ עובד" oninput="renderMonth()"></div>
+        </div>
+        <div class="row" style="margin-top:10px"><button class="btn secondary" onclick="exportMonthCsv()">ייצוא חודש CSV</button><button class="btn secondary" onclick="exportAlertsCsv()">ייצוא חריגות CSV</button><button class="btn secondary" onclick="printMonthReport()">דוח להדפסה</button><button id="closeMonthBtn" class="btn danger" onclick="toggleMonthClosed()">סגור חודש</button></div>
+      </div>
+      <div class="card"><h2>סיכום חודשי</h2><div id="monthStatus" class="pill hidden"></div><div id="monthMacro" class="kpi-grid" style="margin-top:10px"></div><div id="monthAlerts"></div><div id="monthWorkers"></div></div>
+    </section>
+
+    <section id="backupView" class="view">
+      <div class="card"><h2>גיבוי וייבוא</h2><div class="row"><button class="btn secondary" onclick="exportBackupJson()">ייצוא גיבוי מלא</button><label class="btn secondary" style="display:flex;align-items:center;justify-content:center;margin:0;cursor:pointer">בחר קובץ ייבוא<input id="backupFile" type="file" accept="application/json,.json" class="hidden" onchange="previewImportFile(event)"></label></div><div id="importPreview" style="margin-top:12px"></div></div>
+    </section>
+  </main>
+
+  <div class="fab"><button class="btn" onclick="calculateAndRender(true)">חשב</button><button class="btn secondary" onclick="saveDay()">שמור</button></div>
+  <div id="toast" class="toast"></div>
+  <div id="printArea" class="print-area"></div>
+
+<script>
+const LS_EMPLOYEES='tipCalcEmployees.v3';
+const LS_DAYS='tipCalcDays.v4';
+const LS_CLOSED='tipCalcClosedMonths.v1';
+const BAR_WEEK=0.12;
+const BAR_WEEKEND=0.15;
+
+let employees=loadJson(LS_EMPLOYEES,[]);
+let days=loadJson(LS_DAYS,[]);
+let closedMonths=loadJson(LS_CLOSED,[]);
+// Track indices for each role when adding shift workers. Added hostIdx and managerIdx for hosts and shift managers
+let barIdx=0, waiterIdx=0, hostIdx=0, managerIdx=0, editingEmployeeId=null, loadedDayId=null, lastCalculation=null, pendingImport=null;
+
+const fmt=n=>new Intl.NumberFormat('he-IL',{style:'currency',currency:'ILS',maximumFractionDigits:0}).format(Math.floor(Number(n)||0));
+const pad2=n=>String(n).padStart(2,'0');
+const todayISO=()=>{const d=new Date();return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`};
+const monthISO=()=>todayISO().slice(0,7);
+const roundMoney=n=>Math.round((Number(n)+Number.EPSILON)*100)/100;
+const floorMoney=n=>Math.floor(Math.max(0,Number(n)||0)+Number.EPSILON);
+const monthOfDate=d=>String(d||'').slice(0,7);
+const escapeHTML=s=>String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const escapeAttr=escapeHTML;
+const normalizeId=id=>String(id||'').trim();
+const roleOrder=['waiter','bar','host','manager'];
+const employeeUid=()=>`e_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`;
+const employeeKey=e=>String(e?.uid||e?.id||e?.name||'');
+const employeeOptionValue=e=>`${e.name}${e.id?' · '+e.id:' · '+employeeKey(e).slice(-6)}`;
+function getEmployeeByKey(key){const k=String(key||'');if(!k)return null;return employees.find(e=>employeeKey(e)===k)||null}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('workDate').value = todayISO();
+  document.getElementById('monthPicker').value = monthISO();
+  // run migrations
+  migrateData();
+  // initial workers
+  addShiftWorker('bar');
+  addShiftWorker('waiter');
+  // auto detect weekend based on the default date
+  autoSetWeekend();
+  toggleWeekendState();
+  // render views
+  renderEmployees();
+  renderDays();
+  renderMonth();
+  // attach listener to update weekend automatically when date changes
+  const dateInput = document.getElementById('workDate');
+  if(dateInput){
+    dateInput.addEventListener('change', () => {
+      autoSetWeekend();
+      toggleWeekendState();
+    });
+  }
+});
+
+function loadJson(key,fallback){try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}}
+function saveJson(key,value){localStorage.setItem(key,JSON.stringify(value))}
+function persist(){saveJson(LS_EMPLOYEES,employees);saveJson(LS_DAYS,days);saveJson(LS_CLOSED,closedMonths)}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>el.classList.remove('show'),2400)}
+function getEmployeeById(id){const value=String(id||'');if(!value)return null;return employees.find(e=>String(e.id)===value)||null}
+function roleText(role){
+  // Translate internal role identifiers to Hebrew text. Return empty string when no role.
+  if(role==='bar') return 'ברמן';
+  if(role==='waiter') return 'מלצר';
+  if(role==='both') return 'גם וגם';
+  if(role==='host') return 'מארחת';
+  if(role==='manager') return 'אחמ״ש';
+  return '';
+}
+function isMonthClosed(month){return closedMonths.some(m=>m.month===month)}
+function migrateData(){
+  let changed=false;
+  employees=employees.map(e=>{
+    const next={...e};
+    if(!next.uid){next.uid=employeeUid();changed=true}
+    if(next.active===undefined){next.active=true;changed=true}
+    return next;
+  });
+  days=days.map(d=>{
+    const workers=(d.workers||[]).map(w=>{
+      if(w.empUid) return w;
+      const match=getEmployeeById(w.empId)||employees.find(e=>String(e.name)===String(w.nameSnapshot||w.name));
+      if(match){changed=true;return {...w,empUid:employeeKey(match)}}
+      return w;
+    });
+    const next={...d,workers};
+    if(next.locked===undefined){next.locked=true;next.editCount=next.editCount||0;changed=true}
+    if(next.hostHours===undefined){next.hostHours=roundMoney(workers.filter(w=>w.role==='host').reduce((s,w)=>s+Number(w.hours||0),0));changed=true}
+    if(next.managerHours===undefined){next.managerHours=roundMoney(workers.filter(w=>w.role==='manager').reduce((s,w)=>s+Number(w.hours||0),0));changed=true}
+    return next;
+  });
+  if(changed)persist();
+}
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===id));if(id==='employeesView')renderEmployees();if(id==='journalView')renderDays();if(id==='monthView')renderMonth()}
+function toggleCollapse(id){document.getElementById(id).classList.toggle('collapsed')}
+function toggleWeekendState(){const enabled=document.getElementById('enableBarCut').checked;const weekend=document.getElementById('isWeekend');const wrapper=document.getElementById('weekendWrapper');if(!enabled){weekend.checked=false;weekend.disabled=true;wrapper.classList.add('disabled-option')}else{weekend.disabled=false;wrapper.classList.remove('disabled-option')}}
+
+// Automatically set weekend checkbox based on the selected date.
+function autoSetWeekend(){
+  const dateStr = document.getElementById('workDate').value || '';
+  if(!dateStr) return;
+  const [year,month,dayOfMonth] = dateStr.split('-').map(Number);
+  const d = new Date(year, month - 1, dayOfMonth);
+  const day = d.getDay(); // 0 Sunday, 1 Monday, ..., 5 Friday, 6 Saturday
+  const weekend = (day === 5 || day === 6);
+  // Only update the checkbox if bar cut is enabled; weekend selection is disabled when bar cut is off
+  document.getElementById('isWeekend').checked = weekend;
+}
+
+function saveEmployee(){
+  const id = normalizeId(document.getElementById('empId').value);
+  const name = document.getElementById('empName').value.trim();
+  // derive default role from checkboxes (waiter/bar). allow multiple roles
+  const waiter = document.getElementById('empRoleWaiter').checked;
+  const bar = document.getElementById('empRoleBar').checked;
+  const host = document.getElementById('empRoleHost')?.checked;
+  const manager = document.getElementById('empRoleManager')?.checked;
+  // determine defaultRole: host/manager take precedence, then waiter+bar, then individual waiter or bar
+  let defaultRole = '';
+  if (host) defaultRole = 'host';
+  else if (manager) defaultRole = 'manager';
+  else if (waiter && bar) defaultRole = 'both';
+  else if (waiter) defaultRole = 'waiter';
+  else if (bar) defaultRole = 'bar';
+  else defaultRole = '';
+  // set default stars only for waiter/bar roles; hosts and managers ignore star rating (still stored but unused)
+  let defaultStars = Number(document.getElementById('empDefaultStars').value) || 6;
+  if (defaultRole === 'host' || defaultRole === 'manager') {
+    defaultStars = 6;
+  }
+  const active = document.getElementById('empActive').checked;
+  // require only a name; id is optional
+  if (!name) {
+    toast('חסר שם');
+    return;
+  }
+  // check duplicate id only when id exists
+  if (id) {
+    const duplicate = employees.find(e => String(e.id) === String(id) && employeeKey(e) !== String(editingEmployeeId));
+    if (duplicate) {
+      toast('מס׳ עובד כבר קיים');
+      return;
+    }
+  }
+  const previous = editingEmployeeId ? getEmployeeByKey(editingEmployeeId) : null;
+  const record = {
+    uid: previous?.uid || employeeUid(),
+    id,
+    name,
+    defaultRole,
+    defaultStars,
+    active,
+    createdAt: previous?.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  if (editingEmployeeId) {
+    employees = employees.map(e => employeeKey(e) === String(editingEmployeeId) ? record : e);
+    editingEmployeeId = null;
+  } else {
+    employees.push(record);
+  }
+  employees.sort((a,b) => String(a.name).localeCompare(String(b.name),'he'));
+  saveJson(LS_EMPLOYEES, employees);
+  resetEmployeeForm();
+  renderEmployees();
+  refreshEmployeeLists();
+  toast('העובד נשמר');
+}
+function editEmployee(id){
+  const e = getEmployeeByKey(id);
+  if (!e) return;
+  editingEmployeeId = employeeKey(e);
+  document.getElementById('empId').value = e.id || '';
+  document.getElementById('empName').value = e.name || '';
+  // set role checkboxes based on defaultRole
+  const role = e.defaultRole || '';
+  document.getElementById('empRoleWaiter').checked = (role === 'waiter' || role === 'both');
+  document.getElementById('empRoleBar').checked = (role === 'bar' || role === 'both');
+  document.getElementById('empRoleHost').checked = (role === 'host');
+  document.getElementById('empRoleManager').checked = (role === 'manager');
+  document.getElementById('empDefaultStars').value = e.defaultStars || 6;
+  document.getElementById('empActive').checked = e.active !== false;
+  document.getElementById('saveEmployeeBtn').textContent = 'עדכן עובד';
+  showView('employeesView');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function setEmployeeActive(id,active){const e=getEmployeeByKey(id);if(!e)return;e.active=active;e.updatedAt=new Date().toISOString();saveJson(LS_EMPLOYEES,employees);renderEmployees();refreshEmployeeLists();toast(active?'העובד הופעל':'העובד הוגדר לא פעיל')}
+function resetEmployeeForm(){
+  editingEmployeeId = null;
+  document.getElementById('empId').value = '';
+  document.getElementById('empName').value = '';
+  // clear role checkboxes
+  document.getElementById('empRoleWaiter').checked = false;
+  document.getElementById('empRoleBar').checked = false;
+  document.getElementById('empRoleHost').checked = false;
+  document.getElementById('empRoleManager').checked = false;
+  document.getElementById('empDefaultStars').value = '6';
+  document.getElementById('empActive').checked = true;
+  document.getElementById('saveEmployeeBtn').textContent = 'שמור עובד';
+}
+function renderEmployees(){
+  const q=(document.getElementById('employeeSearch')?.value||'').trim().toLowerCase();
+  const filter=document.getElementById('employeeFilter')?.value||'active';
+  let list=employees.filter(e=>filter==='all'||(filter==='active'?e.active!==false:e.active===false));
+  list=list.filter(e=>!q||String(e.id).includes(q)||String(e.name).toLowerCase().includes(q));
+  const target=document.getElementById('employeesList');
+  if(!list.length){
+    target.innerHTML='<div class="empty">אין עובדים להצגה.</div>';
+    return;
+  }
+  target.innerHTML=list.map(e=>{
+    const idPart = e.id ? 'מס׳ '+escapeHTML(e.id)+' · ' : '';
+    const roleTextPart = roleText(e.defaultRole);
+    const rolePart = roleTextPart ? roleTextPart + ' · ' : '';
+    // show star count only for waiter/bar/both roles
+    const starPart = (e.defaultRole === 'host' || e.defaultRole === 'manager' || e.defaultRole === '') ? '' : `${e.defaultStars || 6} כוכבים · `;
+    const statusPart = e.active===false ? 'לא פעיל' : 'פעיל';
+    const key = escapeAttr(employeeKey(e));
+    return `<div class="employee-card"><div class="employee-head"><div><div class="employee-title">${escapeHTML(e.name)}</div><div class="employee-sub">${idPart}${rolePart}${starPart}${statusPart}</div></div><div class="employee-actions"><button class="btn secondary small" onclick="editEmployee('${key}')">ערוך</button><button class="btn ${e.active===false?'secondary':'danger'} small" onclick="setEmployeeActive('${key}',${e.active===false?'true':'false'})">${e.active===false?'הפעל':'השבת'}</button></div></div></div>`;
+  }).join('');
+}
+
+function employeesForRole(role){
+  // Return employees eligible for the given role. Hosts and managers are exclusive; both=waiter & bar; empty default treated as both waiter and bar.
+  return employees.filter(e=>{
+    if(e.active===false) return false;
+    const r = e.defaultRole||'';
+    if(role==='host') return r==='host';
+    if(role==='manager') return r==='manager';
+    if(role==='bar') return r==='bar'||r==='both'||r==='';
+    if(role==='waiter') return r==='waiter'||r==='both'||r==='';
+    return false;
+  });
+}
+function datalistId(role){
+  if(role==='bar') return 'barEmployeesList';
+  if(role==='waiter') return 'waiterEmployeesList';
+  if(role==='host') return 'hostEmployeesList';
+  if(role==='manager') return 'managerEmployeesList';
+  return '';
+}
+function renderDatalists(){
+  // Build datalists for each role. Values include a stable suffix so duplicate names remain selectable.
+  let html = '';
+  html += `<datalist id="waiterEmployeesList">${employeesForRole('waiter').map(e=>`<option value="${escapeAttr(employeeOptionValue(e))}"></option>`).join('')}</datalist>`;
+  html += `<datalist id="barEmployeesList">${employeesForRole('bar').map(e=>`<option value="${escapeAttr(employeeOptionValue(e))}"></option>`).join('')}</datalist>`;
+  html += `<datalist id="hostEmployeesList">${employeesForRole('host').map(e=>`<option value="${escapeAttr(employeeOptionValue(e))}"></option>`).join('')}</datalist>`;
+  html += `<datalist id="managerEmployeesList">${employeesForRole('manager').map(e=>`<option value="${escapeAttr(employeeOptionValue(e))}"></option>`).join('')}</datalist>`;
+  let holder = document.getElementById('datalistHolder');
+  if(!holder){ holder = document.createElement('div'); holder.id = 'datalistHolder'; document.body.appendChild(holder); }
+  holder.innerHTML = html;
+}
+function refreshEmployeeLists(){renderDatalists()}
+function parseEmployeeInput(value){
+  const raw = String(value || '').trim();
+  if(!raw) return null;
+  const exactOption = employees.find(e => e.active !== false && employeeOptionValue(e) === raw);
+  if(exactOption) return exactOption;
+  const nameMatches = employees.filter(e => e.active !== false && String(e.name) === raw);
+  return nameMatches.length === 1 ? nameMatches[0] : null;
+}
+function addShiftWorker(type,data={}){
+  // Render updated datalists before adding
+  renderDatalists();
+  const container = document.getElementById(type + 'Container');
+  // assign running index based on role
+  let id;
+  if(type === 'bar') id = barIdx++;
+  else if(type === 'waiter') id = waiterIdx++;
+  else if(type === 'host') id = hostIdx++;
+  else id = managerIdx++;
+  const emp = data.empUid ? getEmployeeByKey(data.empUid) : (data.empId ? getEmployeeById(data.empId) : null);
+  const value = emp ? employeeOptionValue(emp) : (data.nameSnapshot || data.name || '');
+  // Determine stars for bar/waiter roles
+  let stars = data.stars || emp?.defaultStars || 6;
+  const hasStars = data.hasStars || (stars !== 6);
+  // build HTML for star section only for bar/waiter
+  const starSection = (type === 'bar' || type === 'waiter') ? `
+    <div class="stars-wrap"><label class="switch-label" for="${type}HasStars${id}"><input id="${type}HasStars${id}" type="checkbox" ${hasStars?'checked':''} onchange="toggleStars('${type}',${id})">כוכבים?</label><div id="${type}StarsOptions${id}" class="stars-options" style="display:${hasStars?'flex':'none'}"><label class="radio-chip"><input type="radio" name="${type}Stars${id}" value="3" ${stars===3?'checked':''}>3</label><label class="radio-chip"><input type="radio" name="${type}Stars${id}" value="4" ${stars===4?'checked':''}>4</label><label class="radio-chip"><input type="radio" name="${type}Stars${id}" value="5" ${stars===5?'checked':''}>5</label><label class="radio-chip"><input type="radio" name="${type}Stars${id}" value="6" ${stars===6?'checked':''}>6</label></div></div>
+  ` : '';
+  const div = document.createElement('div');
+  div.className = 'worker-card';
+  div.innerHTML = `
+    <div class="worker-head">
+      <div style="flex:1;min-width:0">
+        <label for="${type}Emp${id}">עובד</label>
+        <input id="${type}Emp${id}" type="text" list="${datalistId(type)}" data-worker-role="${type}" value="${escapeAttr(value)}" placeholder="חפש לפי שם" oninput="applyEmployeeDefaults('${type}',${id})">
+      </div>
+      <div class="worker-actions"><button class="btn icon danger" aria-label="מחק עובד" onclick="this.closest('.worker-card').remove()">×</button></div>
+    </div>
+    <div class="grid" style="margin-top:10px">
+      <div>
+        <label for="${type}Hours${id}">שעות</label>
+        <input id="${type}Hours${id}" type="number" min="0" max="24" step="0.01" inputmode="decimal" value="${data.hours??''}" placeholder="0">
+      </div>
+    </div>
+    ${starSection}
+  `;
+  container.appendChild(div);
+}
+function applyEmployeeDefaults(type,id){const input=document.getElementById(`${type}Emp${id}`);const emp=parseEmployeeInput(input.value);if(!emp)return;const has=document.getElementById(`${type}HasStars${id}`);const options=document.getElementById(`${type}StarsOptions${id}`);const star=Number(emp.defaultStars)||6;if(star!==6&&has&&options){has.checked=true;options.style.display='flex'}document.querySelectorAll(`input[name="${type}Stars${id}"]`).forEach(r=>r.checked=Number(r.value)===star)}
+function toggleStars(type,id){const box=document.getElementById(`${type}StarsOptions${id}`);box.style.display=getComputedStyle(box).display==='none'?'flex':'none'}
+function getShiftWorkers(type,strict=false){
+  const rows=[...document.querySelectorAll(`#${type}Container .worker-card`)];
+  const out=[];
+  const errors=[];
+  rows.forEach((row,i)=>{
+    const input=row.querySelector(`input[data-worker-role="${type}"]`);
+    const emp=parseEmployeeInput(input?.value);
+    let hours=Number(row.querySelector(`input[id^='${type}Hours']`)?.value||0);
+    hours=Math.min(Math.max(hours,0),24);
+    if(!input?.value.trim()&&!hours)return;
+    if(!emp){errors.push(`${roleText(type)||'עובד'} ${i+1}: עובד לא קיים ברשימת העובדים או שהשם כפול`);return}
+    if(hours<=0){errors.push(`${emp.name}: חסרות שעות`);return}
+    let stars=(type==='bar'||type==='waiter')?(emp.defaultStars||6):6;
+    const has=row.querySelector(`input[id^='${type}HasStars']`)?.checked;
+    if(has){const sel=row.querySelector(`input[name^='${type}Stars']:checked`);if(sel)stars=Number(sel.value)}
+    out.push({role:type,empUid:employeeKey(emp),empId:emp.id||'',name:emp.name,nameSnapshot:emp.name,hours,stars});
+  });
+  const dup=new Set();
+  const seen=new Set();
+  out.forEach(w=>{const key=w.role+'|'+(w.empUid||w.empId||w.name);if(seen.has(key))dup.add(w.name);seen.add(key)});
+  if(dup.size)errors.push('עובד מופיע פעמיים באותו תפקיד: '+[...dup].join(', '));
+  if(strict&&errors.length)throw new Error(errors.join('\n'));
+  return {workers:out,errors};
+}
+
+function calculate(){
+  const totalTip = floorMoney(document.getElementById('totalTip').value || 0);
+  const date = document.getElementById('workDate').value || todayISO();
+  const isWeekend = document.getElementById('isWeekend').checked;
+  const enableBarCut = document.getElementById('enableBarCut').checked;
+  const barPct = enableBarCut ? (isWeekend ? BAR_WEEKEND : BAR_WEEK) : 0;
+  // Collect workers for each role
+  const barData = getShiftWorkers('bar', false);
+  const waiterData = getShiftWorkers('waiter', false);
+  const hostData = getShiftWorkers('host', false);
+  const managerData = getShiftWorkers('manager', false);
+  const errors = [...barData.errors, ...waiterData.errors, ...hostData.errors, ...managerData.errors];
+  const waiters = waiterData.workers;
+  const bars = barData.workers;
+  const hosts = hostData.workers;
+  const managers = managerData.workers;
+  const waiterHours = waiters.reduce((s, w) => s + w.hours, 0);
+  if (totalTip <= 0) errors.push('חסר סה״כ טיפים');
+  // Require at least one waiter for distribution; hosts/managers do not count for this validation
+  if (waiters.length === 0) errors.push('חסר לפחות מלצר אחד');
+  if (errors.length) return { ok: false, errors };
+  const barTip = floorMoney(totalTip * barPct);
+  const remaining = totalTip - barTip;
+  // Determine restaurant percentage based on hourly pay after restaurant cut
+  let restPct = 0.15;
+  const avgWith = p => (remaining * (1 - p)) / waiterHours;
+  if (avgWith(0.20) >= 100) restPct = 0.20;
+  else if (avgWith(0.17) >= 90) restPct = 0.17;
+  const restCut = floorMoney(remaining * restPct);
+  const finalForWaiters = floorMoney(remaining - restCut);
+  // Compute pays for waiters
+  const effWaiters = waiters.reduce((s, w) => s + w.hours * w.stars, 0);
+  const perWaiter = effWaiters ? finalForWaiters / effWaiters : 0;
+  const waiterRows = waiters.map(w => ({ ...w, pay: floorMoney(w.hours * w.stars * perWaiter), rate: w.hours ? floorMoney((w.hours * w.stars * perWaiter) / w.hours) : 0 }));
+  // Compute pays for bartenders
+  const effBar = bars.reduce((s, w) => s + w.hours * w.stars, 0);
+  const perBar = effBar ? barTip / effBar : 0;
+  const barRows = bars.map(w => ({ ...w, pay: floorMoney(w.hours * w.stars * perBar), rate: w.hours ? floorMoney((w.hours * w.stars * perBar) / w.hours) : 0 }));
+  // Hosts and managers do not receive tips; assign zero pay and rate
+  const hostRows = hosts.map(w => ({ ...w, pay: 0, rate: 0 }));
+  const managerRows = managers.map(w => ({ ...w, pay: 0, rate: 0 }));
+  const avgHourly = waiterHours ? finalForWaiters / waiterHours : 0;
+  return {
+    ok: true,
+    date,
+    totalTip,
+    isWeekend,
+    enableBarCut,
+    barPct,
+    barTip,
+    restPct,
+    restCut,
+    finalForWaiters,
+    avgHourly: floorMoney(avgHourly),
+    waiterHours: roundMoney(waiterHours),
+    barHours: roundMoney(bars.reduce((s, w) => s + w.hours, 0)),
+    hostHours: roundMoney(hosts.reduce((s, w) => s + w.hours, 0)),
+    managerHours: roundMoney(managers.reduce((s, w) => s + w.hours, 0)),
+    waiters: waiterRows.sort((a, b) => b.pay - a.pay),
+    bars: barRows.sort((a, b) => b.pay - a.pay),
+    hosts: hostRows.sort((a, b) => b.hours - a.hours),
+    managers: managerRows.sort((a, b) => b.hours - a.hours)
+  };
+}
+function calculateAndRender(scroll=false){const calc=calculate();if(!calc.ok){toast(calc.errors[0]);return null}lastCalculation=calc;renderResults(calc);if(scroll)document.getElementById('calcResults').scrollIntoView({behavior:'smooth',block:'start'});return calc}
+function renderResults(c){
+  // Show results container (sticky summary removed to avoid duplication)
+  document.getElementById('calcResults').classList.remove('hidden');
+  // Build macro KPI grid in requested order: total tip, bar cut, restaurant cut, net waiters, average hourly, then hours per role
+  document.getElementById('resultsMacro').innerHTML = `
+    <div class="kpi hero-kpi"><span>סה"כ טיפ<span class="icon">💰</span></span><b>${fmt(c.totalTip)}</b></div>
+    <div class="kpi"><span>לבר<span class="icon">🍸</span></span><b>${fmt(c.barTip)} (${Math.round(c.barPct * 100)}%)</b></div>
+    <div class="kpi"><span>למסעדה<span class="icon">🍽</span></span><b>${fmt(c.restCut)} (${Math.round(c.restPct * 100)}%)</b></div>
+    <div class="kpi"><span>נטו מלצרים<span class="icon">🧑‍🍳</span></span><b>${fmt(c.finalForWaiters)}</b></div>
+    <div class="kpi"><span>ש"ש ממוצע<span class="icon">⌚</span></span><b>${fmt(c.avgHourly)}</b></div>
+    <div class="kpi"><span>שעות מלצרים<span class="icon">🕑</span></span><b>${c.waiterHours}</b></div>
+    <div class="kpi"><span>שעות ברמנים<span class="icon">🍸</span></span><b>${c.barHours}</b></div>
+    <div class="kpi"><span>שעות מארחות<span class="icon">💁‍♀️</span></span><b>${c.hostHours}</b></div>
+    <div class="kpi"><span>שעות אחמ״שים<span class="icon">👔</span></span><b>${c.managerHours}</b></div>
+  `;
+  // Render individual worker cards
+  document.getElementById('waitersResults').innerHTML = renderResultCards(c.waiters, c.avgHourly);
+  document.getElementById('barResults').innerHTML = renderResultCards(c.bars, 0);
+  document.getElementById('hostResults').innerHTML = renderResultCards(c.hosts, 0);
+  document.getElementById('managerResults').innerHTML = renderResultCards(c.managers, 0);
+  // Collapse bar and waiter sections after calculation to save space
+  document.getElementById('barBody').classList.add('collapsed');
+  document.getElementById('waiterBody').classList.add('collapsed');
+  document.getElementById('hostBody').classList.add('collapsed');
+  document.getElementById('managerBody').classList.add('collapsed');
+}
+function renderResultCards(rows, avg){
+  if (!rows.length) return '<div class="empty">אין נתונים.</div>';
+  return rows.map(r => {
+    const cls = avg > 0 ? (r.rate >= avg * 1.10 ? 'outlier-high' : (r.rate <= avg * 0.90 ? 'outlier-low' : '')) : '';
+    // Determine if stars should be shown; hosts and managers do not have star ratings
+    const showStars = !(r.role === 'host' || r.role === 'manager');
+    // Determine icon based on role for visual context
+    const roleIcons = { waiter:'🧑‍🍳', bar:'🍸', host:'💁‍♀️', manager:'👔' };
+    const icon = roleIcons[r.role] || '';
+    return `
+      <div class="result-card ${cls}">
+        <div class="name">${escapeHTML(r.name)}<span class="icon">${icon}</span> <span class="muted">${escapeHTML(r.empId)}</span></div>
+        <div class="metric big"><span>שעות</span><b>${r.hours}</b></div>
+        ${showStars ? `<div class="metric"><span>כוכבים</span><b>${r.stars}</b></div>` : ''}
+        <div class="metric"><span>ש״ש</span><b>${fmt(r.rate)}</b></div>
+        <div class="metric big"><span>סכום</span><b>${fmt(r.pay)}</b></div>
+      </div>
+    `;
+  }).join('');
+}
+
+function buildDayRecord(calc,idOverride=null,copyNo=0){return {id:idOverride||cryptoId(),date:calc.date,copyNo,locked:true,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),editCount:0,totalTip:calc.totalTip,isWeekend:calc.isWeekend,enableBarCut:calc.enableBarCut,barPct:calc.barPct,barTip:calc.barTip,restPct:calc.restPct,restCut:calc.restCut,finalForWaiters:calc.finalForWaiters,avgHourly:calc.avgHourly,waiterHours:calc.waiterHours,barHours:calc.barHours,hostHours:calc.hostHours,managerHours:calc.managerHours,workers:[...calc.waiters.map(w=>({...w,role:'waiter'})),...calc.bars.map(w=>({...w,role:'bar'})),...calc.hosts.map(w=>({...w,role:'host'})),...calc.managers.map(w=>({...w,role:'manager'}))]}}
+function saveDay(){const calc=calculateAndRender(false);if(!calc)return;const month=monthOfDate(calc.date);if(isMonthClosed(month)){toast('החודש סגור לעריכה');return}let existing=days.find(d=>d.date===calc.date&&d.id!==loadedDayId);let id=loadedDayId;let copyNo=0;if(existing){const answer=prompt('כבר קיים יום שמור לתאריך הזה. כתוב: דרוס / עותק / בטל','בטל');if(!answer||answer==='בטל')return;if(answer==='דרוס'){id=existing.id}else if(answer==='עותק'){copyNo=days.filter(d=>d.date===calc.date).length}else{toast('פעולה בוטלה');return}}const old=id?days.find(d=>d.id===id):null;const record=buildDayRecord(calc,id,copyNo);if(old){record.createdAt=old.createdAt;record.editCount=(old.editCount||0)+1;days=days.map(d=>d.id===id?record:d)}else{days.push(record)}days.sort((a,b)=>String(a.date).localeCompare(String(b.date)));saveJson(LS_DAYS,days);loadedDayId=record.id;lastCalculation=calc;renderDays();renderMonth();updateEditStatus();toast('היום נשמר')}
+function cryptoId(){return 'd_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7)}
+function newDay(){
+  loadedDayId = null;
+  document.getElementById('workDate').value = todayISO();
+  document.getElementById('totalTip').value = '';
+  // Bar cut is enabled by default
+  document.getElementById('enableBarCut').checked = true;
+  // Automatically set weekend based on the new date and update weekend toggle
+  autoSetWeekend();
+  toggleWeekendState();
+  // reset existing workers
+  document.getElementById('barContainer').innerHTML = '';
+  document.getElementById('waiterContainer').innerHTML = '';
+  document.getElementById('hostContainer').innerHTML = '';
+  document.getElementById('managerContainer').innerHTML = '';
+  // add default bar and waiter worker rows
+  addShiftWorker('bar');
+  addShiftWorker('waiter');
+  // hide results
+  document.getElementById('calcResults').classList.add('hidden');
+  lastCalculation = null;
+  updateEditStatus();
+  showView('calcView');
+  toast('יום חדש');
+}
+function loadDay(id){
+  const d=days.find(x=>x.id===id);
+  if(!d)return;
+  loadedDayId=d.id;
+  document.getElementById('workDate').value=d.date;
+  document.getElementById('totalTip').value=d.totalTip;
+  document.getElementById('enableBarCut').checked=d.enableBarCut!==false;
+  document.getElementById('isWeekend').checked=!!d.isWeekend;
+  toggleWeekendState();
+  roleOrder.forEach(role=>document.getElementById(role+'Container').innerHTML='');
+  roleOrder.forEach(role=>{
+    (d.workers||[]).filter(w=>w.role===role).forEach(w=>addShiftWorker(role,{empUid:w.empUid,empId:w.empId,name:w.nameSnapshot||w.name,hours:w.hours,stars:w.stars,hasStars:w.stars!==6}));
+  });
+  if(!document.getElementById('barContainer').children.length)addShiftWorker('bar');
+  if(!document.getElementById('waiterContainer').children.length)addShiftWorker('waiter');
+  showView('calcView');
+  updateEditStatus();
+  calculateAndRender(false);
+  toast('היום נטען');
+}
+function deleteDay(id){const d=days.find(x=>x.id===id);if(!d)return;if(isMonthClosed(monthOfDate(d.date))){toast('החודש סגור');return}if(!confirm('למחוק יום שמור?'))return;days=days.filter(x=>x.id!==id);if(loadedDayId===id)loadedDayId=null;saveJson(LS_DAYS,days);renderDays();renderMonth();updateEditStatus();toast('היום נמחק')}
+function updateEditStatus(){const el=document.getElementById('editStatus');if(!loadedDayId){el.classList.add('hidden');return}const d=days.find(x=>x.id===loadedDayId);if(!d){el.classList.add('hidden');return}el.textContent=`יום שמור · ${d.date} · ${d.editCount||0} עריכות`;el.classList.remove('hidden')}
+function renderDays(){const target=document.getElementById('daysList');if(!days.length){target.innerHTML='<div class="empty">אין ימים שמורים.</div>';return}target.innerHTML=[...days].sort((a,b)=>String(b.date).localeCompare(String(a.date))).map(d=>{const workers=d.workers||[];return `<div class="day-card"><div class="day-head"><div><div class="day-title">${escapeHTML(d.date)}${d.copyNo?` · עותק ${d.copyNo}`:''}</div><div class="day-sub">טיפים ${fmt(d.totalTip)} · מלצרים ${workers.filter(w=>w.role==='waiter').length} · ברמנים ${workers.filter(w=>w.role==='bar').length} · מארחות ${workers.filter(w=>w.role==='host').length} · אחמ״שים ${workers.filter(w=>w.role==='manager').length} · ${d.locked?'נעול':'פתוח'}</div></div><div class="day-actions"><button class="btn secondary small" onclick="loadDay('${d.id}')">פתח</button><button class="btn danger small" onclick="deleteDay('${d.id}')">מחק</button></div></div></div>`}).join('')}
+
+function currentMonthDays(){const m=document.getElementById('monthPicker')?.value||monthISO();return days.filter(d=>monthOfDate(d.date)===m)}
+function renderMonth(){
+  const m=document.getElementById('monthPicker')?.value||monthISO();
+  const md=currentMonthDays();
+  const role=document.getElementById('roleFilter')?.value||'all';
+  const q=(document.getElementById('monthSearch')?.value||'').trim().toLowerCase();
+  const closed=isMonthClosed(m);
+  const status=document.getElementById('monthStatus');
+  status.textContent=closed?'חודש סגור':'חודש פתוח';
+  status.className='pill '+(closed?'err':'ok');
+  document.getElementById('closeMonthBtn').textContent=closed?'פתח חודש':'סגור חודש';
+  document.getElementById('closeMonthBtn').className=closed?'btn secondary':'btn danger';
+  const macro=makeMonthMacro(md);
+  document.getElementById('monthMacro').innerHTML=`
+    <div class="kpi hero-kpi"><span>סה״כ טיפים</span><b>${fmt(macro.totalTip)}</b></div>
+    <div class="kpi"><span>ימי פעילות</span><b>${macro.days}</b></div>
+    <div class="kpi"><span>נטו מלצרים</span><b>${fmt(macro.finalForWaiters)}</b></div>
+    <div class="kpi"><span>לבר</span><b>${fmt(macro.barTip)}</b></div>
+    <div class="kpi"><span>למסעדה</span><b>${fmt(macro.restCut)}</b></div>
+    <div class="kpi"><span>שעות מלצרים</span><b>${roundMoney(macro.waiterHours)}</b></div>
+    <div class="kpi"><span>שעות ברמנים</span><b>${roundMoney(macro.barHours)}</b></div>
+    <div class="kpi"><span>שעות מארחות</span><b>${roundMoney(macro.hostHours)}</b></div>
+    <div class="kpi"><span>שעות אחמ״שים</span><b>${roundMoney(macro.managerHours)}</b></div>`;
+  renderAlerts(md);
+  let workers=monthWorkerSummary(md,role);
+  if(q)workers=workers.filter(w=>String(w.empId).includes(q)||String(w.name).toLowerCase().includes(q)||roleText(w.role).includes(q));
+  workers.sort((a,b)=>b.pay-a.pay||b.hours-a.hours||String(a.name).localeCompare(String(b.name),'he'));
+  document.getElementById('monthWorkers').innerHTML=workers.length?workers.map(w=>`<div class="summary-card"><div class="summary-head"><div><div class="summary-title">${escapeHTML(w.name)} <span class="muted">${escapeHTML(w.empId)}</span></div><div class="summary-sub">${roleText(w.role)} · ${w.days.size} ימים</div></div></div><div class="kpi-grid" style="margin-top:8px"><div class="kpi"><span>שעות</span><b>${roundMoney(w.hours)}</b></div><div class="kpi"><span>טיפים</span><b>${fmt(w.pay)}</b></div><div class="kpi"><span>ש״ש ממוצע</span><b>${fmt(w.hours?w.pay/w.hours:0)}</b></div></div></div>`).join(''):'<div class="empty">אין עובדים להצגה.</div>';
+}
+function makeMonthMacro(md){return md.reduce((a,d)=>({days:a.days+1,totalTip:a.totalTip+Number(d.totalTip||0),finalForWaiters:a.finalForWaiters+Number(d.finalForWaiters||0),barTip:a.barTip+Number(d.barTip||0),restCut:a.restCut+Number(d.restCut||0),waiterHours:a.waiterHours+Number(d.waiterHours||0),barHours:a.barHours+Number(d.barHours||0),hostHours:a.hostHours+Number(d.hostHours??(d.workers||[]).filter(w=>w.role==='host').reduce((s,w)=>s+Number(w.hours||0),0)),managerHours:a.managerHours+Number(d.managerHours??(d.workers||[]).filter(w=>w.role==='manager').reduce((s,w)=>s+Number(w.hours||0),0))}),{days:0,totalTip:0,finalForWaiters:0,barTip:0,restCut:0,waiterHours:0,barHours:0,hostHours:0,managerHours:0})}
+function monthWorkerSummary(md,role='all'){const map=new Map();md.forEach(d=>(d.workers||[]).forEach(w=>{if(role!=='all'&&w.role!==role)return;const key=(w.empUid||w.empId||w.nameSnapshot||w.name)+'|'+w.role;if(!map.has(key)){const emp=getEmployeeByKey(w.empUid)||getEmployeeById(w.empId);map.set(key,{empUid:w.empUid||'',empId:w.empId||'',name:emp?.name||w.nameSnapshot||w.name,role:w.role,hours:0,pay:0,days:new Set()})}const item=map.get(key);item.hours+=Number(w.hours||0);item.pay+=Number(w.pay||0);item.days.add(d.date)}));return [...map.values()]}
+function renderAlerts(md){const alerts=buildAlerts(md);document.getElementById('monthAlerts').innerHTML=alerts.length?`<div class="divider"></div><h3>בדיקת חודש</h3>${alerts.map(a=>`<div class="alert-card"><b class="${a.level==='err'?'danger-text':'warn-text'}">${escapeHTML(a.title)}</b><div class="muted">${escapeHTML(a.detail)}</div></div>`).join('')}`:'<div class="alert-card"><b class="ok-text">לא נמצאו חריגות משמעותיות</b></div>'}
+function buildAlerts(md){
+  const alerts=[];
+  const byDate={};
+  md.forEach(d=>{
+    byDate[d.date]=(byDate[d.date]||0)+1;
+    // No tip total on this day
+    if(!d.totalTip) alerts.push({level:'err',title:'יום עם 0 טיפים',detail:d.date});
+    // Missing waiters on this day
+    if(!d.workers.some(w=>w.role==='waiter')) alerts.push({level:'err',title:'יום ללא מלצרים',detail:d.date});
+    // Missing bartenders on this day
+    if(!d.workers.some(w=>w.role==='bar')) alerts.push({level:'warn',title:'יום ללא ברמנים',detail:d.date});
+    // Hourly rate out of reasonable range
+    if(d.avgHourly>180 || d.avgHourly<30) alerts.push({level:'warn',title:'ש״ש חריג',detail:`${d.date} · ${fmt(d.avgHourly)}`});
+    // Check each worker
+    d.workers.forEach(w=>{
+      // Employee ID is optional; do not alert on missing employee ID
+      // Only alert for zero hours
+      if(!w.hours) alerts.push({level:'warn',title:'עובד עם 0 שעות',detail:`${d.date} · ${w.name}`});
+    });
+  });
+  // Look for duplicate dates
+  Object.entries(byDate).forEach(([date,count])=>{
+    if(count>1) alerts.push({level:'err',title:'כפילות תאריך',detail:`${date} · ${count} רשומות`});
+  });
+  return alerts;
+}
+function toggleMonthClosed(){const m=document.getElementById('monthPicker').value||monthISO();if(isMonthClosed(m)){if(!confirm('לפתוח את החודש לעריכה?'))return;closedMonths=closedMonths.filter(x=>x.month!==m);toast('החודש נפתח לעריכה')}else{const alerts=buildAlerts(currentMonthDays());if(alerts.some(a=>a.level==='err')&&!confirm('יש חריגות חמורות. לסגור בכל זאת?'))return;closedMonths.push({month:m,closedAt:new Date().toISOString()});toast('החודש נסגר')}saveJson(LS_CLOSED,closedMonths);renderMonth()}
+function printMonthReport(){const m=document.getElementById('monthPicker').value||monthISO();const md=currentMonthDays();const macro=makeMonthMacro(md);const workers=monthWorkerSummary(md,'all').sort((a,b)=>String(a.name).localeCompare(String(b.name),'he'));const alerts=buildAlerts(md);document.getElementById('printArea').innerHTML=`<h1>דוח טיפים חודשי · ${escapeHTML(m)}</h1><div class="print-grid"><div>ימי פעילות: <b>${macro.days}</b></div><div>סה״כ טיפים: <b>${fmt(macro.totalTip)}</b></div><div>נטו מלצרים: <b>${fmt(macro.finalForWaiters)}</b></div><div>לבר: <b>${fmt(macro.barTip)}</b></div><div>למסעדה: <b>${fmt(macro.restCut)}</b></div><div>שעות מלצרים: <b>${roundMoney(macro.waiterHours)}</b></div><div>שעות ברמנים: <b>${roundMoney(macro.barHours)}</b></div><div>שעות מארחות: <b>${roundMoney(macro.hostHours)}</b></div><div>שעות אחמ״שים: <b>${roundMoney(macro.managerHours)}</b></div></div><h2>פירוט עובדים</h2>${workers.map(w=>`<div class="summary-card"><b>${escapeHTML(w.name)} · ${escapeHTML(w.empId)} · ${roleText(w.role)}</b><div>שעות: ${roundMoney(w.hours)} · טיפים: ${fmt(w.pay)} · ש״ש: ${fmt(w.hours?w.pay/w.hours:0)}</div></div>`).join('')}<h2>חריגות</h2>${alerts.length?alerts.map(a=>`<div>${escapeHTML(a.title)} · ${escapeHTML(a.detail)}</div>`).join(''):'<div>לא נמצאו חריגות.</div>'}`;window.print()}
+
+function toCsv(rows){return rows.map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n')}
+function downloadText(filename,text,type='text/plain;charset=utf-8'){const blob=new Blob([text],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();URL.revokeObjectURL(a.href)}
+function exportAllDaysCsv(){const rows=[['date','copy','role','employee_uid','employee_id','name','hours','stars','pay','rate','total_tip','avg_hourly']];days.forEach(d=>(d.workers||[]).forEach(w=>rows.push([d.date,d.copyNo||0,w.role,w.empUid||'',w.empId,w.nameSnapshot||w.name,w.hours,w.stars,w.pay,w.rate,d.totalTip,d.avgHourly])));downloadText('tip_journal.csv','\ufeff'+toCsv(rows),'text/csv;charset=utf-8')}
+function exportMonthCsv(){const m=document.getElementById('monthPicker').value||monthISO();const rows=[['month','role','employee_uid','employee_id','name','hours','pay','avg_rate','days']];monthWorkerSummary(currentMonthDays(),'all').forEach(w=>rows.push([m,w.role,w.empUid||'',w.empId,w.name,roundMoney(w.hours),floorMoney(w.pay),floorMoney(w.hours?w.pay/w.hours:0),w.days.size]));downloadText(`tip_month_${m}.csv`,'\ufeff'+toCsv(rows),'text/csv;charset=utf-8')}
+function exportAlertsCsv(){const m=document.getElementById('monthPicker').value||monthISO();const rows=[['month','level','title','detail']];buildAlerts(currentMonthDays()).forEach(a=>rows.push([m,a.level,a.title,a.detail]));downloadText(`tip_alerts_${m}.csv`,'\ufeff'+toCsv(rows),'text/csv;charset=utf-8')}
+function exportBackupJson(){const backup={version:5,exportedAt:new Date().toISOString(),employees,days,closedMonths};downloadText(`tipcalc_backup_${new Date().toISOString().slice(0,10)}.json`,JSON.stringify(backup,null,2),'application/json;charset=utf-8')}
+function previewImportFile(event){const file=event.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const data=JSON.parse(reader.result);if(!Array.isArray(data.employees)||!Array.isArray(data.days))throw new Error('bad');pendingImport=data;const months=[...new Set(data.days.map(d=>monthOfDate(d.date)).filter(Boolean))].join(', ');document.getElementById('importPreview').innerHTML=`<div class="alert-card"><b>תצוגה מקדימה</b><div class="muted">עובדים: ${data.employees.length} · ימים: ${data.days.length} · חודשים: ${escapeHTML(months||'אין')}</div><div class="row" style="margin-top:10px"><button class="btn secondary" onclick="applyImport('merge')">מזג עם הקיים</button><button class="btn danger" onclick="applyImport('replace')">החלף הכול</button><button class="btn secondary" onclick="clearImportPreview()">בטל</button></div></div>`}catch{toast('קובץ גיבוי לא תקין')}};reader.readAsText(file)}
+function applyImport(mode){if(!pendingImport)return;if(mode==='replace'&&!confirm('להחליף את כל הנתונים הקיימים?'))return;if(mode==='replace'){employees=pendingImport.employees||[];days=pendingImport.days||[];closedMonths=pendingImport.closedMonths||[]}else{const empMap=new Map(employees.map(e=>[employeeKey(e),e]));(pendingImport.employees||[]).forEach(e=>{const key=employeeKey(e)||String(e.id||e.name||employeeUid());empMap.set(key,{...empMap.get(key),...e})});employees=[...empMap.values()];const dayMap=new Map(days.map(d=>[String(d.id),d]));(pendingImport.days||[]).forEach(d=>dayMap.set(String(d.id),d));days=[...dayMap.values()];const monthMap=new Map(closedMonths.map(m=>[m.month,m]));(pendingImport.closedMonths||[]).forEach(m=>monthMap.set(m.month,m));closedMonths=[...monthMap.values()]}migrateData();persist();pendingImport=null;clearImportPreview();refreshEmployeeLists();renderEmployees();renderDays();renderMonth();toast('הייבוא הושלם')}
+function clearImportPreview(){pendingImport=null;document.getElementById('importPreview').innerHTML='';document.getElementById('backupFile').value=''}
+</script>
+</body>
+</html>
